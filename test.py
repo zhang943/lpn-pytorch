@@ -41,7 +41,7 @@ def parse_args():
                         help='experiment configure file name',
                         type=str,
                         # default="experiments/mpii/lpn/lpn50_256x256_gd256x2_gc.yaml")
-                        default="experiments/coco/lpn/lpn101_256x192_gd256x2_gc.yaml")
+                        default="experiments/coco/lpn/lpn50_256x192_gd256x2_gc.yaml")
 
     # philly
     parser.add_argument('--modelDir',

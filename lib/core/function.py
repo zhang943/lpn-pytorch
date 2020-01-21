@@ -4,10 +4,14 @@
 # Written by Bin Xiao (Bin.Xiao@microsoft.com)
 # ------------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
+# Updated by Zhe Zhang (zhangzhe@smail.nju.edu.cn)
+# ------------------------------------------------------------------------------
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
- 
+
 import time
 import logging
 import os
@@ -16,10 +20,9 @@ import numpy as np
 import torch
 
 from core.evaluate import accuracy
-from core.inference import get_final_preds
+from core.inference import get_final_preds, get_final_preds_using_softargmax
 from utils.transforms import flip_back
 from utils.vis import save_debug_images
-
 
 logger = logging.getLogger(__name__)
 
@@ -63,8 +66,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         # measure accuracy and record loss
         losses.update(loss.item(), input.size(0))
 
-        _, avg_acc, cnt, pred = accuracy(output.detach().cpu().numpy(),
-                                         target.detach().cpu().numpy())
+        _, avg_acc, cnt, pred = accuracy(output.detach().cpu().numpy(), target.detach().cpu().numpy())
         acc.update(avg_acc, cnt)
 
         # measure elapsed time
@@ -78,9 +80,9 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
                   'Data {data_time.val:.3f}s ({data_time.avg:.3f}s)\t' \
                   'Loss {loss.val:.5f} ({loss.avg:.5f})\t' \
                   'Accuracy {acc.val:.3f} ({acc.avg:.3f})'.format(
-                      epoch, i, len(train_loader), batch_time=batch_time,
-                      speed=input.size(0)/batch_time.val,
-                      data_time=data_time, loss=losses, acc=acc)
+                epoch, i, len(train_loader), batch_time=batch_time,
+                speed=input.size(0) / batch_time.val,
+                data_time=data_time, loss=losses, acc=acc)
             logger.info(msg)
 
             writer = writer_dict['writer']
@@ -90,8 +92,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
             writer_dict['train_global_steps'] = global_steps + 1
 
             prefix = '{}_{}'.format(os.path.join(output_dir, 'train'), i)
-            save_debug_images(config, input, meta, target, pred*4, output,
-                              prefix)
+            # save_debug_images(config, input, meta, target, pred * 4, output, prefix)
 
 
 def validate(config, val_loader, val_dataset, model, criterion, output_dir,
@@ -136,7 +137,6 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                                            val_dataset.flip_pairs)
                 output_flipped = torch.from_numpy(output_flipped.copy()).cuda()
 
-
                 # feature is not aligned, shift flipped heatmap for higher accuracy
                 if config.TEST.SHIFT_HEATMAP:
                     output_flipped[:, :, :, 1:] = \
@@ -152,8 +152,7 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
             num_images = input.size(0)
             # measure accuracy and record loss
             losses.update(loss.item(), num_images)
-            _, avg_acc, cnt, pred = accuracy(output.cpu().numpy(),
-                                             target.cpu().numpy())
+            _, avg_acc, cnt, pred = accuracy(output.cpu().numpy(), target.cpu().numpy())
 
             acc.update(avg_acc, cnt)
 
@@ -165,15 +164,19 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
             s = meta['scale'].numpy()
             score = meta['score'].numpy()
 
-            preds, maxvals = get_final_preds(
-                config, output.clone().cpu().numpy(), c, s)
+            if config.TEST.SOFT_ARGMAX:
+                preds, maxvals = get_final_preds_using_softargmax(config, output.clone(), c, s)
+            else:
+                preds, maxvals = get_final_preds(config, output.clone().cpu().numpy(), c, s)
+
+            preds = preds - config.TEST.BIAS
 
             all_preds[idx:idx + num_images, :, 0:2] = preds[:, :, 0:2]
             all_preds[idx:idx + num_images, :, 2:3] = maxvals
             # double check this all_boxes parts
             all_boxes[idx:idx + num_images, 0:2] = c[:, 0:2]
             all_boxes[idx:idx + num_images, 2:4] = s[:, 0:2]
-            all_boxes[idx:idx + num_images, 4] = np.prod(s*200, 1)
+            all_boxes[idx:idx + num_images, 4] = np.prod(s * 200, 1)
             all_boxes[idx:idx + num_images, 5] = score
             image_path.extend(meta['image'])
 
@@ -184,14 +187,14 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                       'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t' \
                       'Loss {loss.val:.4f} ({loss.avg:.4f})\t' \
                       'Accuracy {acc.val:.3f} ({acc.avg:.3f})'.format(
-                          i, len(val_loader), batch_time=batch_time,
-                          loss=losses, acc=acc)
+                    i, len(val_loader), batch_time=batch_time,
+                    loss=losses, acc=acc)
                 logger.info(msg)
 
                 prefix = '{}_{}'.format(
                     os.path.join(output_dir, 'val'), i
                 )
-                save_debug_images(config, input, meta, target, pred*4, output,
+                save_debug_images(config, input, meta, target, pred * 4, output,
                                   prefix)
 
         name_values, perf_indicator = val_dataset.evaluate(
@@ -243,23 +246,26 @@ def _print_name_value(name_value, full_arch_name):
     values = name_value.values()
     num_values = len(name_value)
     logger.info(
-        '| Arch ' +
-        ' '.join(['| {}'.format(name) for name in names]) +
+        '|    Arch    ' +
+        ' '.join(['| {:^8}'.format(name) for name in names]) +
         ' |'
     )
-    logger.info('|---' * (num_values+1) + '|')
+    # logger.info('|---' * (num_values + 1) + '|')
 
-    if len(full_arch_name) > 15:
-        full_arch_name = full_arch_name[:8] + '...'
+    if len(full_arch_name) > 8:
+        full_arch_name = full_arch_name[:7] + '...'
+    if len(full_arch_name) == 3:
+        full_arch_name = "   " + full_arch_name + "    "
     logger.info(
         '| ' + full_arch_name + ' ' +
-        ' '.join(['| {:.3f}'.format(value) for value in values]) +
-         ' |'
+        ' '.join(['| {:^8.4f}'.format(value) for value in values]) +
+        ' |'
     )
 
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
+
     def __init__(self):
         self.reset()
 

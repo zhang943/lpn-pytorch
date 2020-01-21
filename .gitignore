@@ -1,3 +1,8 @@
+output/*
+log/*
+lib/nms/*
+models/*
+
 # IntelliJ project files
 .idea
 *.iml

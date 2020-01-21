@@ -1,4 +1,3 @@
-
 # ------------------------------------------------------------------------------
 # Copyright (c) Microsoft
 # Licensed under the MIT License.
@@ -12,7 +11,6 @@ from __future__ import print_function
 import os
 
 from yacs.config import CfgNode as CN
-
 
 _C = CN()
 
@@ -114,6 +112,10 @@ _C.TEST.COCO_BBOX_FILE = ''
 _C.TEST.BBOX_THRE = 1.0
 _C.TEST.MODEL_FILE = ''
 
+# soft_argmax
+_C.TEST.SOFT_ARGMAX = False
+_C.TEST.BIAS = 0.0
+
 # debug
 _C.DEBUG = CN()
 _C.DEBUG.DEBUG = False
@@ -126,7 +128,7 @@ _C.DEBUG.SAVE_HEATMAPS_PRED = False
 def update_config(cfg, args):
     cfg.defrost()
     cfg.merge_from_file(args.cfg)
-    cfg.merge_from_list(args.opts)
+    # cfg.merge_from_list(args.opts)
 
     if args.modelDir:
         cfg.OUTPUT_DIR = args.modelDir
@@ -134,8 +136,8 @@ def update_config(cfg, args):
     if args.logDir:
         cfg.LOG_DIR = args.logDir
 
-    if args.dataDir:
-        cfg.DATA_DIR = args.dataDir
+    # if args.dataDir:
+    #     cfg.DATA_DIR = args.dataDir
 
     cfg.DATASET.ROOT = os.path.join(
         cfg.DATA_DIR, cfg.DATASET.ROOT
@@ -151,10 +153,3 @@ def update_config(cfg, args):
         )
 
     cfg.freeze()
-
-
-if __name__ == '__main__':
-    import sys
-    with open(sys.argv[1], 'w') as f:
-        print(_C, file=f)
-

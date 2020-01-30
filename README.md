@@ -34,7 +34,7 @@ This is an official pytorch implementation of [*Simple and Lightweight Human Pos
 
 ### Note:
 - Flip test is used when testing the inference speed.
-- For higher FPS, you can make the FLIP_TEST false.
+- For **higher** FPS, you can make the FLIP_TEST false.
 
 ## Installation and Preparation
 Please refer to HRNet's [quick start](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch)
@@ -50,8 +50,8 @@ python test.py \
 #### Testing on COCO val2017 dataset using model zoo's models([GoogleDrive](https://drive.google.com/drive/folders/1_VuLzWXeKg-Lzu54HfZQsMGUwUG6xXzS?usp=sharing))
 
 ```
-python tools/test.py \
-    --cfg experiments/coco/lpn/lpn50_256x192_gd256x2_gc.yaml \
+python test.py \
+    --cfg experiments/coco/lpn/lpn50_256x192_gd256x2_gc.yaml
 ```
 
 <div id="refer-anchor"></div>

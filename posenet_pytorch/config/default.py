@@ -21,6 +21,7 @@ _C.TEST.POST_PROCESS = True
 # common params for NETWORK
 _C.MODEL = CN()
 _C.MODEL.NAME = 'pose_hrnet'
+_C.MODEL.TYPE = 'pose_high_resolution_net'
 _C.MODEL.INIT_WEIGHTS = True
 _C.MODEL.PRETRAINED = ''
 _C.MODEL.NUM_JOINTS = 17

@@ -38,7 +38,7 @@ class TestLightweightPoseNet:
 @pytest.fixture
 def config() -> CN:
     _C = DEFAULT_CONFIG
-    _C.MODEL.EXTRA = MODEL_EXTRAS['lighweight_pose_net']
+    _C.MODEL.EXTRA = MODEL_EXTRAS['lightweight_pose_net']
     return _C
 
 

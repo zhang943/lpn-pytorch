@@ -7,11 +7,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from lpn_pytorch.models import LightweightPoseNet
-from lpn_pytorch.models.lightweight_modules import LW_Bottleneck
-from lpn_pytorch.utils.inference import get_final_preds
-from lpn_pytorch.config.default import _C as DEFAULT_CONFIG
-from lpn_pytorch.config.models import MODEL_EXTRAS
+from posenet_pytorch.models import LightweightPoseNet
+from posenet_pytorch.models.lightweight_modules import LW_Bottleneck
+from posenet_pytorch.utils.inference import get_final_preds
+from posenet_pytorch.config.default import _C as DEFAULT_CONFIG
+from posenet_pytorch.config.models import MODEL_EXTRAS
 
 
 class TestLightweightPoseNet:

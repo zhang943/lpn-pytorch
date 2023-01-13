@@ -49,6 +49,7 @@
       "ms-python.python",
       "eamodio.gitlens",
       "njqdev.vscode-python-typehint"
-    ]
+    ],
+    "postCreateCommand": "pip install -r .devcontainer/requirements-dev.txt"
   }
     

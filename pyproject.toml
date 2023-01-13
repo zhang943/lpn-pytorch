@@ -1,0 +1,33 @@
+[build-system]
+requires =  ["setuptools>=46.4.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.isort]
+line_length = 120
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+profile = "black"
+
+[tool.black]
+line_length = 120
+skip_string_normalization = false
+
+[tool.pylint]
+  [tool.pylint.master]
+    extension-pkg-whitelist = ["cv2", "pycuda", "torch", "tensorrt"]
+
+  [tool.pylint.messages_control]
+    disable = ["missing-docstring", "fixme", "too-many-function-args", "import-error"]
+
+  [tool.pylint.format]
+    max-line-length = 120
+
+  [tool.pylint.typecheck]
+    generated-members = "torch.*"
+
+  [tool.pylint.similarities]
+    min-similarity-lines = 6
+    ignore-comments = true
+    ignore-docstrings = true
+    ignore-imports = true

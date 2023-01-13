@@ -7,22 +7,22 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from lpn_pytorch.models import LPN
+from lpn_pytorch.models import LightweightPoseNet
 from lpn_pytorch.models.lightweight_modules import LW_Bottleneck
 from lpn_pytorch.utils.inference import get_final_preds
 from lpn_pytorch.config.default import _C as DEFAULT_CONFIG
 from lpn_pytorch.config.models import MODEL_EXTRAS
 
 
-class TestLPN:
+class TestLightweightPoseNet:
     def test_init(self, block: Type[LW_Bottleneck], layers: List[int], config: CN):
-        model = LPN(block, layers, config)
-        assert isinstance(model, LPN)
+        model = LightweightPoseNet(block, layers, config)
+        assert isinstance(model, LightweightPoseNet)
         assert isinstance(model, nn.Module)
 
     def test_forward(
             self,
-            model: LPN,
+            model: LightweightPoseNet,
             config: CN,
             patches: torch.Tensor,
             batch_size: int,
@@ -53,8 +53,8 @@ def layers() -> List[int]:
 
 
 @pytest.fixture
-def model(block, layers, config) -> LPN:
-    return LPN(block, layers, config)
+def model(block, layers, config) -> LightweightPoseNet:
+    return LightweightPoseNet(block, layers, config)
 
 
 @pytest.fixture

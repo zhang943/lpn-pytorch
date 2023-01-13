@@ -9,10 +9,10 @@ BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)
 
 
-class LPN(nn.Module):
+class LightweightPoseNet(nn.Module):
 
     def __init__(self, block, layers, cfg, **kwargs):
-        super(LPN, self).__init__()
+        super(LightweightPoseNet, self).__init__()
         extra = cfg.MODEL.EXTRA
 
         self.inplanes = 64
@@ -166,7 +166,7 @@ def get_pose_net(cfg, is_train, **kwargs):
 
     block_class, layers = resnet_spec[num_layers]
 
-    model = LPN(block_class, layers, cfg, **kwargs)
+    model = LightweightPoseNet(block_class, layers, cfg, **kwargs)
 
     if is_train and cfg.MODEL.INIT_WEIGHTS:
         model.init_weights(cfg.MODEL.PRETRAINED)

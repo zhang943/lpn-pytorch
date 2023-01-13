@@ -10,6 +10,16 @@ from __future__ import print_function
 
 from yacs.config import CfgNode as CN
 
+# lightweight_pose_net related params
+LIGHTWEIGHT_POSE_NET = CN()
+LIGHTWEIGHT_POSE_NET.ATTENTION = 'GC'                    # "GC" or "SE"
+LIGHTWEIGHT_POSE_NET.FINAL_CONV_KERNEL = 1               # 1 or 3
+LIGHTWEIGHT_POSE_NET.DECONV_WITH_BIAS = False            # bool
+LIGHTWEIGHT_POSE_NET.NUM_DECONV_LAYERS = 2
+LIGHTWEIGHT_POSE_NET.NUM_DECONV_FILTERS = [256, 256]
+LIGHTWEIGHT_POSE_NET.NUM_DECONV_KERNELS = [4, 4]         # 2 or 3 or 4
+LIGHTWEIGHT_POSE_NET.NUM_LAYERS: 50                      # 50 or 101 or 152
+
 
 # pose_resnet related params
 POSE_RESNET = CN()
@@ -53,6 +63,7 @@ POSE_HIGH_RESOLUTION_NET.STAGE4.FUSE_METHOD = 'SUM'
 
 
 MODEL_EXTRAS = {
+    'lighweight_pose_net': LIGHTWEIGHT_POSE_NET,
     'pose_resnet': POSE_RESNET,
     'pose_high_resolution_net': POSE_HIGH_RESOLUTION_NET,
 }

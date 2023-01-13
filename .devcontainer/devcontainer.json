@@ -1,0 +1,54 @@
+{
+    "name": "lpn-devcontainer",
+    "build": {
+      "dockerfile": "Dockerfile",
+      "context": ".."
+    },
+    "forwardPorts": [8050],
+    "mounts": [
+      "type=bind,source=${localEnv:HOME}/.oh-my-zsh,target=/home/user/.oh-my-zsh",
+      "type=bind,source=${localEnv:HOME}/.vim,target=/home/user/.vim",
+      "type=bind,source=${localEnv:HOME}/.vimrc,target=/home/user/.vimrc",
+      "type=bind,source=${localEnv:HOME}/.zshrc,target=/home/user/.zshrc",
+      "type=bind,source=${localEnv:HOME}/.p10k.zsh,target=/home/user/.p10k.zsh"
+    ],
+    "remoteUser": "user",
+    "updateRemoteUserUID": true,
+    "runArgs": [
+      "--gpus=all",
+      "--privileged",
+      "--shm-size=24G",
+      "--user=root"
+    ],
+    "settings": {
+      "editor.rulers": [
+        120
+      ],
+      "python.pythonPath": "/opt/conda/bin/python3",
+      "python.formatting.provider": "black",
+      "python.formatting.blackArgs": [
+        "--config", ".devcontainer/pyproject.toml"
+      ],
+      "python.linting.enabled": true,
+      "python.linting.pylintEnabled": true,
+      "python.linting.pylintPath": "~/.local/bin/pylint",
+      "python.linting.pylintArgs": [
+        "--rcfile=${workspaceFolder}/mantis_core/pyproject.toml"
+      ],
+      "isort.args": [
+        "--settings-path=${workspaceFolder}/mantis_core/pyproject.toml"
+      ],
+      "python.testing.pytestArgs": [
+        "tests"
+      ],
+      "python.testing.pytestEnabled": true,
+      "python.testing.pytestPath": "~/.local/bin/pytest"
+    },
+    "extensions": [
+      "mhutchie.git-graph",
+      "ms-python.python",
+      "eamodio.gitlens",
+      "njqdev.vscode-python-typehint"
+    ]
+  }
+    
